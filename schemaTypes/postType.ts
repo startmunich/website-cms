@@ -71,17 +71,12 @@ export const postType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'authorName',
-      title: 'Author name',
-      type: 'string',
-      description: 'The name of the person credited as the author of this post.',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'authorImage',
-      title: 'Author image',
-      type: 'image',
-      description: 'A portrait photo of the author, shown next to their name.',
+      name: 'author',
+      title: 'Author',
+      type: 'reference',
+      to: [{type: 'author'}],
+      description:
+        'The person credited as the author of this post. Choose an existing author or create a new one.',
       validation: (rule) => rule.required(),
     }),
   ],
@@ -95,7 +90,7 @@ export const postType = defineType({
   preview: {
     select: {
       title: 'title',
-      author: 'authorName',
+      author: 'author.name',
       media: 'image',
     },
     prepare(selection) {
