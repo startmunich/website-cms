@@ -33,5 +33,38 @@ export const postType = defineType({
       of: [{type: 'block'}],
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: 'description',
+      title: 'description',
+      type: 'text',
+      description: 'A brief summary of the post to provide context alongside the heading.',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'category',
+      title: 'category',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'News', value: 'news'},
+          {title: 'Member Story', value: 'memberStory'},
+          {title: 'Blog Post', value: 'blogPost'},
+          {title: 'Other', value: 'other'},
+        ],
+      },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'authorName',
+      title: 'Author name',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'authorImage',
+      title: 'Author image',
+      type: 'image',
+      validation: (rule) => rule.required(),
+    }),
   ],
 })
