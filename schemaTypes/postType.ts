@@ -51,6 +51,7 @@ export const postType = defineType({
       name: 'image',
       title: 'Main image',
       type: 'image',
+      options: {hotspot: true},
       description: 'The cover image displayed at the top of the post.',
       validation: (rule) => rule.required(),
     }),
