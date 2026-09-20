@@ -1,5 +1,7 @@
 import {StarIcon} from '@sanity/icons/Star'
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {LinkedInUrlInput} from './lib/LinkedInUrlInput'
+import {squarePortraitImage} from './lib/squarePortraitImage'
 
 export const memberStoryType = defineType({
   name: 'memberStory',
@@ -53,11 +55,9 @@ export const memberStoryType = defineType({
       description: 'The cover photo displayed on the card and at the top of the story page.',
       validation: (rule) => rule.required(),
     }),
-    defineField({
+    squarePortraitImage({
       name: 'portrait',
       title: 'Portrait',
-      type: 'image',
-      options: {hotspot: true},
       description: 'A square portrait photo of the member. Shown prominently on the story page.',
     }),
     defineField({
@@ -92,6 +92,7 @@ export const memberStoryType = defineType({
       name: 'linkedin',
       title: 'LinkedIn profile',
       type: 'url',
+      components: {input: LinkedInUrlInput},
       description: 'The member’s LinkedIn profile, opened from their story page.',
       validation: (rule) => rule.uri({scheme: ['https']}).warning('Should be a valid https://linkedin.com/in/… URL'),
     }),

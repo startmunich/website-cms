@@ -29,7 +29,6 @@ export const postType = defineType({
       options: {
         list: [
           {title: 'News', value: 'news'},
-          {title: 'Member Story', value: 'memberStory'},
           {title: 'Blog Post', value: 'blogPost'},
           {title: 'Other', value: 'other'},
         ],

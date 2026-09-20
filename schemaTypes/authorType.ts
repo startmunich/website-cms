@@ -1,39 +1,7 @@
-import {TextInput} from '@sanity/ui'
-import {StringInputProps, defineField, defineType, set} from 'sanity'
-import {useCallback} from 'react'
+import {defineField, defineType} from 'sanity'
 import {UserIcon} from '@sanity/icons/User'
-
-function normalizeLinkedInUrl(value: string): string {
-  const trimmed = value.trim()
-  if (!trimmed) return ''
-
-  const withHttps = trimmed
-    .replace(/^https?:\/\/(www\.)?/, 'https://')
-    .replace(/^https:\/\/www\./, 'https://')
-
-  return withHttps.replace(/\/+$/, '')
-}
-
-function LinkedInUrlInput(props: StringInputProps) {
-  const {value, onChange} = props
-
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const normalized = normalizeLinkedInUrl(event.currentTarget.value)
-      onChange(set(normalized))
-    },
-    [onChange],
-  )
-
-  return (
-    <TextInput
-      type="url"
-      value={value ?? ''}
-      onChange={handleChange}
-      placeholder="https://linkedin.com/in/username"
-    />
-  )
-}
+import {LinkedInUrlInput} from './lib/LinkedInUrlInput'
+import {squarePortraitImage} from './lib/squarePortraitImage'
 
 export const authorType = defineType({
   name: 'author',
@@ -48,11 +16,9 @@ export const authorType = defineType({
       description: 'The full name of the author, as displayed on their posts.',
       validation: (rule) => rule.required(),
     }),
-    defineField({
+    squarePortraitImage({
       name: 'image',
       title: 'Portrait',
-      type: 'image',
-      options: {hotspot: true},
       description:
         'A square portrait photo of the author, shown next to their name on posts. Will be cropped to 1:1.',
     }),
