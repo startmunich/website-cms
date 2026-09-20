@@ -43,9 +43,9 @@ export const memberStoryType = defineType({
       title: 'Short quote',
       type: 'text',
       rows: 3,
-      description:
-        'A one-line quote shown on the overview card. Keep it short and personal.',
-      validation: (rule) => rule.required().max(280).warning('Keep it under 280 characters for best results'),
+      description: 'A one-line quote shown on the overview card. Keep it short and personal.',
+      validation: (rule) =>
+        rule.required().max(280).warning('Keep it under 280 characters for best results'),
     }),
     defineField({
       name: 'image',
@@ -94,7 +94,8 @@ export const memberStoryType = defineType({
       type: 'url',
       components: {input: LinkedInUrlInput},
       description: 'The member’s LinkedIn profile, opened from their story page.',
-      validation: (rule) => rule.uri({scheme: ['https']}).warning('Should be a valid https://linkedin.com/in/… URL'),
+      validation: (rule) =>
+        rule.uri({scheme: ['https']}).warning('Should be a valid https://linkedin.com/in/… URL'),
     }),
     defineField({
       name: 'body',

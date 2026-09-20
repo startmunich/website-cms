@@ -44,7 +44,8 @@ export const postType = defineType({
       rows: 3,
       description:
         'A brief summary of the post shown alongside the heading. Keep it short and informative.',
-      validation: (rule) => rule.required().max(280).warning('Keep it under 280 characters for best results'),
+      validation: (rule) =>
+        rule.required().max(280).warning('Keep it under 280 characters for best results'),
     }),
     defineField({
       name: 'image',

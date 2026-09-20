@@ -1,9 +1,36 @@
-# Sanity Clean Content Studio
+# START Munich Website CMS
 
-Congratulations, you have now installed the Sanity Content Studio, an open-source real-time content editing environment connected to the Sanity backend.
+Sanity Content Studio powering the content for the START Munich website.
 
-Now you can do the following things:
+## Getting started
 
-- [Read “getting started” in the docs](https://www.sanity.io/docs/introduction/getting-started?utm_source=readme)
-- [Join the Sanity community](https://www.sanity.io/community/join?utm_source=readme)
-- [Extend and build plugins](https://www.sanity.io/docs/content-studio/extending?utm_source=readme)
+```bash
+npm install
+npm run dev
+```
+
+The Studio runs at [http://localhost:3333](http://localhost:3333).
+
+## Project layout
+
+- `schemaTypes/` — Sanity document and field definitions for the site's content models
+- `sanity.config.ts` — Studio configuration (project, dataset, plugins)
+- `.husky/pre-commit` — runs `lint-staged` to format staged files with Prettier on every commit
+
+## Common commands
+
+| Command                  | Description                     |
+| ------------------------ | ------------------------------- |
+| `npm run dev`            | Start the Studio locally        |
+| `npm run build`          | Build the Studio for production |
+| `npm run deploy`         | Deploy the Studio               |
+| `npm run deploy-graphql` | Deploy the GraphQL API          |
+
+## Content models
+
+The dataset contains editorial content types (e.g. posts, authors, member stories). The exact schema is evolving, so refer to `schemaTypes/` for the current definitions.
+
+## Development notes
+
+- Code is formatted with Prettier (config in `package.json`); formatting is enforced on commit via `lint-staged`.
+- Linting via ESLint (see `eslint.config.mjs`).
