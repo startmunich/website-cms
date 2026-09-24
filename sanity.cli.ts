@@ -9,4 +9,13 @@ export default defineCliConfig({
     autoUpdates: true,
     appId: 'e8c3w1w1vkcyf3ft5qstpdtr',
   },
+  schemaExtraction: {
+    enabled: true,
+    enforceRequiredFields: true,
+  },
+  typegen: {
+    enabled: true,
+    schema: 'schema.json',
+    generates: './sanity.types.ts',
+  },
 })

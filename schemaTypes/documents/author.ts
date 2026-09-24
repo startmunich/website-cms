@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {UserIcon} from '@sanity/icons/User'
-import {LinkedInUrlInput} from './lib/LinkedInUrlInput'
-import {squarePortraitImage} from './lib/squarePortraitImage'
+import {LinkedInUrlInput} from '../shared/linkedin-url-input'
+import {squarePortraitImage} from '../shared/square-portrait-image'
 
 export const authorType = defineType({
   name: 'author',

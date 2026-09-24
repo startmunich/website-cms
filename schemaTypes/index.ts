@@ -1,5 +1,5 @@
-import {postType} from './postType'
-import {authorType} from './authorType'
-import {memberStoryType} from './memberStoryType'
+import {postType} from './documents/post'
+import {authorType} from './documents/author'
+import {memberStoryType} from './documents/member-story'
 
 export const schemaTypes = [postType, authorType, memberStoryType]

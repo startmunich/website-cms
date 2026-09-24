@@ -1,7 +1,7 @@
 import {StarIcon} from '@sanity/icons/Star'
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {LinkedInUrlInput} from './lib/LinkedInUrlInput'
-import {squarePortraitImage} from './lib/squarePortraitImage'
+import {LinkedInUrlInput} from '../shared/linkedin-url-input'
+import {squarePortraitImage} from '../shared/square-portrait-image'
 
 export const memberStoryType = defineType({
   name: 'memberStory',

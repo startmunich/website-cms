@@ -1,7 +1,7 @@
 import {TextInput} from '@sanity/ui'
 import {StringInputProps, set} from 'sanity'
 import {useCallback} from 'react'
-import {normalizeLinkedInUrl} from './linkedInUrl'
+import {normalizeLinkedInUrl} from './linkedin-url'
 
 export function LinkedInUrlInput(props: StringInputProps) {
   const {value, onChange} = props
