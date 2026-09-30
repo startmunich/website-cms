@@ -35,6 +35,29 @@ updates:
       # or 09:00 UTC by convention, so this lands off-peak and predictably.
       time: '05:00'
       timezone: Europe/Berlin
+    ignore:
+      # TypeScript majors, until the lint stack can follow.
+      #
+      # TypeScript 7 is the native Go port. Its npm package no longer exports
+      # the JavaScript compiler API at all — `require('typescript')` returns
+      # only `version` and `versionMajorMinor`, with `TypeFlags`,
+      # `createProgram` and `SyntaxKind` replaced by a new, unstable
+      # `unstable/*` surface that is not the old API. The `tsc` CLI still
+      # works, so typechecking is fine, but the lint stack reads the API
+      # directly and dies:
+      #
+      #   ts-api-utils -> TypeError: Cannot read properties of undefined
+      #   (reading 'Intrinsic')
+      #
+      # @typescript-eslint/parser, the latest of which is 8.71.0, declares
+      # `typescript: ">=4.8.4 <6.1.0"`, and nothing newer exists yet. So
+      # there is no combination of versions that satisfies both, and every
+      # attempt just produces a PR that can never go green.
+      #
+      # Drop this rule when typescript-eslint supports TypeScript 7.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
     groups:
       # Split by semver rather than by package name. Dependabot resolves a
       # dependency matching several groups into "the first group that it
