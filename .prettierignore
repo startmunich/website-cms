@@ -4,3 +4,10 @@ static/
 node_modules/
 package-lock.json
 schema.json
+
+# Vendored agent skills are byte-for-byte copies of their upstreams, pinned by
+# a content hash in skills-lock.json. Reformatting them breaks that hash, so
+# every `skills update -p` would see a phantom change and the weekly updater
+# would open a PR that only re-adds or strips whitespace.
+.agents/
+skills-lock.json
