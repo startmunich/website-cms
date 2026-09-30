@@ -64,7 +64,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
-          if [ -z "$(git status --porcelain)" ]; then
+          # Scoped to the same pathspec as the `git add` below. A bare
+          # `git status --porcelain` also reports untracked files, and
+          # `skills update` leaves `.claude/` and `agent/` behind on a clean
+          # runner even when no skill content changed. That made this guard
+          # see a change, fall through, and then `git commit` with nothing
+          # staged: "nothing added to commit but untracked files present",
+          # exit 1. The job failed every Wednesday without ever opening a PR.
+          #
+          # Asking only about the paths this workflow actually vendors makes
+          # the guard and the commit agree on scope, so "already up to date"
+          # is decided by the lock file and not by stray files.
+          if [ -z "$(git status --porcelain -- .agents skills-lock.json)" ]; then
             echo "Skills already up to date — no PR needed."
             exit 0
           fi
