@@ -1,15 +1,18 @@
 name: CI
 
-# The gate that Dependabot's `auto-merge` waits on. Without it, auto-merge
-# merges every dependency bump the moment the PR becomes mergeable, because
-# auto-merge only blocks on *required* status checks — so removing the
-# `ci` check from the `main branch protection` ruleset silently turns
-# auto-merge into "merge untested dependencies".
+# The gate that dependency auto-merge waits on. Dependabot auto-merge cannot be
+# configured in dependabot.yml — it is enabled per pull request, or by a bot
+# watching for them — but whatever enables it blocks on *required* status
+# checks and nothing else. With no required checks, auto-merge merges every
+# dependency bump the moment the PR becomes mergeable, with nothing verified.
+# That is why the `main branch protection` ruleset requires `ci`: removing this
+# check silently turns auto-merge into "merge untested dependencies".
 #
-# Runs the same three checks a developer gets from the pre-commit hook plus a
-# real Studio build. `sanity build` is the one that matters most: it re-extracts
-# the schema, so a bump that breaks schema parsing fails here even when
-# `tsc --noEmit` passes.
+# Four steps, cheapest first. The pre-commit hook only runs prettier, so the
+# typecheck and lint below have no local counterpart and would otherwise be
+# caught only after a push. `sanity build` is the most valuable of the four: it
+# re-extracts the schema, so a bump that breaks schema parsing fails here even
+# when `tsc --noEmit` passes.
 
 on:
   push:
