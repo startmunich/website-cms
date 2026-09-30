@@ -1,0 +1,97 @@
+name: Update agent skills
+
+# Keeps the project-scoped agent skills in .agents/skills/ current with their
+# upstreams. Dependabot and Renovate cannot do this: neither tool understands
+# skill folders, and skills are pinned by a content hash in skills-lock.json
+# rather than by a semver range, so there is no version string for a bot to
+# bump. `skills update -p` is the only supported updater.
+#
+# Deliberately opens a PR and stops there — it does not auto-merge. A skill
+# update silently changes how agents behave in this repository, so that is a
+# change worth a human reading the diff.
+
+on:
+  schedule:
+    # Wednesday 04:23 UTC. Deliberately not Monday, the default weekday slot
+    # for both Dependabot and Renovate, so a skill refresh never lands in the
+    # same window as a dependency bump.
+    - cron: '23 4 * * 3'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    name: update
+    runs-on: ubuntu-latest
+    # Cloning the upstream skill repo plus 4 folders is quick. Ten minutes is
+    # far past normal and stops a hung network clone from burning a runner.
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+
+      - name: Check for a skills lock file
+        id: present
+        run: |
+          if [ -f skills-lock.json ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No skills-lock.json — this repo has no project-scoped skills."
+          fi
+
+      # `skills update` exits 0 whether or not anything changed, so the change
+      # itself is detected with git rather than trusted from the exit status.
+      - name: Update project skills
+        if: steps.present.outputs.found == 'true'
+        run: npx --yes skills@1 update -p --yes
+
+      - name: Open pull request
+        if: steps.present.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Skills already up to date — no PR needed."
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git add .agents skills-lock.json
+          git commit -m 'chore(skills): update agent skills'
+
+          # --force-with-lease lets a re-run overwrite last week's branch, so a
+          # still-open PR is updated in place instead of the run failing. The
+          # lease makes it fail rather than clobber if anyone pushed by hand.
+          branch="chore/update-agent-skills"
+          git push --force-with-lease origin "HEAD:refs/heads/$branch" || {
+            echo "::error::Could not push to $branch. If the branch was changed by hand, close its PR and re-run."
+            exit 1
+          }
+
+          if gh pr view "$branch" --json number --jq .number >/dev/null 2>&1; then
+            echo "PR for $branch is already open — updated it in place."
+          else
+            gh pr create \
+              --base "${{ github.event.repository.default_branch }}" \
+              --head "$branch" \
+              --title 'chore(skills): update agent skills' \
+              --body 'Automated weekly refresh of the project-scoped agent skills in `.agents/skills/`, run by `skills update -p`.
+
+            Review the diff before merging: a skill update changes how agents behave in this repository.'
+          fi
