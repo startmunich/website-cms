@@ -1,0 +1,74 @@
+name: CI
+
+# The gate that Dependabot's `auto-merge` waits on. Without it, auto-merge
+# merges every dependency bump the moment the PR becomes mergeable, because
+# auto-merge only blocks on *required* status checks — so removing the
+# `ci` check from the `main branch protection` ruleset silently turns
+# auto-merge into "merge untested dependencies".
+#
+# Runs the same three checks a developer gets from the pre-commit hook plus a
+# real Studio build. `sanity build` is the one that matters most: it re-extracts
+# the schema, so a bump that breaks schema parsing fails here even when
+# `tsc --noEmit` passes.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Superseded PR commits are wasted runner time. Never cancelled on main,
+  # where the push run is the signal that main itself is green.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    # Named explicitly because the ruleset's required status check matches on
+    # this string. Renaming the job breaks the gate until the ruleset is
+    # updated to match.
+    name: ci
+    runs-on: ubuntu-latest
+    # Generous next to the real cost of this job (a couple of minutes), but
+    # bounded so a hung install cannot burn a runner indefinitely.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          # Matches the version in update-skills.yml, so local and CI agree.
+          node-version: '24'
+          cache: npm
+
+      # `npm ci` rather than `npm install`: CI installs exactly what the
+      # committed lockfile pins, so a stale or hand-edited lockfile fails the
+      # build instead of being silently repaired. Dependabot updates the
+      # lockfile, so it is the lockfile that has to stay honest.
+      #
+      # HUSKY=0 skips the `prepare` script's git hook install. The hooks are a
+      # local-commit affordance and only add noise here.
+      - name: Install dependencies
+        run: npm ci
+        env:
+          HUSKY: '0'
+
+      # Cheapest check first, so a type error does not wait behind an install.
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # Prettier is otherwise only enforced by the pre-commit hook, which
+      # Dependabot cannot trigger, so without this a dependency bump could
+      # never break formatting but a human PR could silently drift.
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Build studio
+        run: npm run build

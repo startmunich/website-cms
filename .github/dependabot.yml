@@ -1,0 +1,81 @@
+# Dependabot version updates.
+#
+# Security updates are not configured here. They run off the repository's
+# "Dependabot security updates" setting and need no config file; this file only
+# adds routine version updates on top of them.
+#
+# Auto-merge below is gated on the `ci` job, which the `main branch protection`
+# ruleset requires. If CI is ever removed without also removing that required
+# check, these PRs will merge without being verified.
+#
+# Configuration reference:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      # Deliberately Monday, not Wednesday. `update-skills.yml` refreshes the
+      # vendored agent skills on Wednesday 04:23 UTC specifically so a skill
+      # refresh never lands in the same window as a dependency bump. Keeping
+      # the two on different days is what preserves that separation.
+      day: monday
+      # 05:00 Berlin is 03:00 UTC. GitHub's weekly window is 09:00 UTC, so
+      # this lands a few hours early and avoids the start-of-week rush.
+      time: '05:00'
+      timezone: Europe/Berlin
+    # Declined explicitly rather than left to the default (which is also
+    # `deny`) so the intent survives someone reading the file for the first
+    # time. Lifecycle scripts from dependencies do not run during an update.
+    insecure-external-code-execution: deny
+    auto-merge:
+      # `minor` covers minor *and* patch updates. Major updates are left for a
+      # human, since those are the ones that can change Studio behaviour or
+      # require code changes.
+      type: minor
+    permissions:
+      contents: write
+      pull-requests: write
+    groups:
+      # Split by semver rather than by package name. Name-based groups have to
+      # be written so they do not overlap (sanity, react and eslint would each
+      # match a catch-all patch group), and overlapping groups are resolved by
+      # an internal rule that is easy to get wrong. Semver groups are mutually
+      # exclusive by construction, so a dependency always lands somewhere
+      # predictable.
+      #
+      # Keeping patch separate from minor means the high-volume, low-risk
+      # patch PR does not hold up a minor bump that is actually worth reading.
+      patch:
+        applies-to: version-updates
+        update-types:
+          - patch
+      minor:
+        applies-to: version-updates
+        update-types:
+          - minor
+      # No security-updates group on purpose. A security bump that cannot be
+      # resolved (Dependabot currently reports one via @module-federation's
+      # undici constraint) would otherwise hold up every other security fix
+      # queued behind it.
+
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '05:00'
+      timezone: Europe/Berlin
+    auto-merge:
+      type: minor
+    permissions:
+      contents: write
+      pull-requests: write
+    groups:
+      actions-patch:
+        applies-to: version-updates
+        update-types:
+          - patch
