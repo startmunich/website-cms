@@ -22,6 +22,144 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
+export type NewsItem = {
+  _id: string
+  _type: 'newsItem'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  description: string
+  url: string
+  image: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  order?: number
+  isVisible?: boolean
+}
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x: number
+  y: number
+  height: number
+  width: number
+}
+
+export type NetworkCompany = {
+  _id: string
+  _type: 'networkCompany'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  type: 'Venture Capital' | 'Finance' | 'Technology' | 'Consulting' | 'Other'
+  logo: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+}
+
+export type Partner = {
+  _id: string
+  _type: 'partner'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  slug: Slug
+  legacyId?: string
+  category:
+    | 'Industry'
+    | 'Venture Capital'
+    | 'Startup'
+    | 'Ecosystem'
+    | 'Initiatives'
+    | 'Research'
+    | 'Technology'
+    | 'Other'
+  logo: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  logoNoBackground?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  isFeatured?: boolean
+  isVisible?: boolean
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
+}
+
+export type Startup = {
+  _id: string
+  _type: 'startup'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  slug: Slug
+  legacyId?: string
+  summary: string
+  description: string
+  logo: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  website?: string
+  foundingYear?: number
+  categories?: Array<string>
+  isSpotlight?: boolean
+  isYCombinatorAlumni?: boolean
+  isMTZ?: boolean
+  isEWOR?: boolean
+  companyLinkedin?: string
+  milestones?: string
+  supportingPrograms?: string
+  founder?: {
+    name: string
+    role?: string
+    batch?: string
+    image?: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+    }
+    linkedin?: string
+  }
+}
+
 export type MemberStory = {
   _id: string
   _type: 'memberStory'
@@ -74,28 +212,6 @@ export type MemberStory = {
   }>
   publishedAt: string
   order?: number
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
 }
 
 export type AuthorReference = {
@@ -260,10 +376,14 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
-  | MemberStory
+  | NewsItem
   | SanityImageCrop
   | SanityImageHotspot
+  | NetworkCompany
+  | Partner
   | Slug
+  | Startup
+  | MemberStory
   | AuthorReference
   | Post
   | Author
