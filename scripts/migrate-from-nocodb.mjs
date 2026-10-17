@@ -229,15 +229,18 @@ async function migrateStartups() {
       companyLinkedin: row['Company Linkedin'] || undefined,
       milestones: row['First milestones'] || undefined,
       supportingPrograms: row['Supporting Programs'] || undefined,
-      founder: memberName
-        ? {
-            _type: 'object',
-            name: memberName,
-            role: row['Company Role'] || 'Founder',
-            batch: (row['Member Batch'] || row.Batch || '').trim() || undefined,
-            image: founderImage,
-            linkedin: row['Member Linkedin'] || undefined,
-          }
+      founders: memberName
+        ? [
+            {
+              _type: 'founder',
+              _key: 'nocodb-member',
+              name: memberName,
+              role: row['Company Role'] || 'Founder',
+              batch: (row['Member Batch'] || row.Batch || '').trim() || undefined,
+              image: founderImage,
+              linkedin: row['Member Linkedin'] || undefined,
+            },
+          ]
         : undefined,
     })
 

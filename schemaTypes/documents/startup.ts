@@ -1,5 +1,39 @@
 import {RocketIcon} from '@sanity/icons/Rocket'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
+
+/** A START Munich member who founded the startup. */
+const founderFields = [
+  defineField({
+    name: 'name',
+    title: 'Name',
+    type: 'string',
+    validation: (rule) => rule.required(),
+  }),
+  defineField({
+    name: 'role',
+    title: 'Role',
+    type: 'string',
+    description: 'e.g. "Co-Founder & CTO".',
+  }),
+  defineField({
+    name: 'batch',
+    title: 'Member batch',
+    type: 'string',
+    description: 'The member batch the founder joined in, e.g. "WS25".',
+  }),
+  defineField({
+    name: 'image',
+    title: 'Portrait',
+    type: 'image',
+    options: {hotspot: true},
+  }),
+  defineField({
+    name: 'linkedin',
+    title: 'LinkedIn profile',
+    type: 'url',
+    validation: (rule) => rule.uri({scheme: ['https']}),
+  }),
+]
 
 /**
  * A portfolio company shown on `/startups` and `/startup-details/[id]`.
@@ -139,43 +173,33 @@ export const startupType = defineType({
       description: 'START Munich programmes supporting this company.',
     }),
     defineField({
-      name: 'founder',
-      title: 'Founder',
-      type: 'object',
+      name: 'founders',
+      title: 'Founders',
+      type: 'array',
       description:
-        'The START Munich member who founded the company. Nested rather than a reference: a startup has at most one member attached, and the data is only ever edited in this one form.',
-      fields: [
-        defineField({
-          name: 'name',
-          title: 'Name',
-          type: 'string',
-          validation: (rule) => rule.required(),
-        }),
-        defineField({
-          name: 'role',
-          title: 'Role',
-          type: 'string',
-          description: 'e.g. "Co-Founder & CTO".',
-        }),
-        defineField({
-          name: 'batch',
-          title: 'Member batch',
-          type: 'string',
-          description: 'The member batch the founder joined in, e.g. "WS25".',
-        }),
-        defineField({
-          name: 'image',
-          title: 'Portrait',
-          type: 'image',
-          options: {hotspot: true},
-        }),
-        defineField({
-          name: 'linkedin',
-          title: 'LinkedIn profile',
-          type: 'url',
-          validation: (rule) => rule.uri({scheme: ['https']}),
+        'The START Munich members who founded the company, in the order they should be shown. Nested rather than references: the data is only ever edited in this one form.',
+      of: [
+        defineArrayMember({
+          name: 'founder',
+          title: 'Founder',
+          type: 'object',
+          fields: founderFields,
+          preview: {
+            select: {title: 'name', subtitle: 'role', media: 'image'},
+          },
         }),
       ],
+    }),
+    defineField({
+      name: 'founder',
+      title: 'Founder (legacy)',
+      type: 'object',
+      description:
+        'Superseded by "Founders". Kept read-only until the founder-to-founders migration has moved every value across.',
+      deprecated: {reason: 'Use the "Founders" list instead.'},
+      readOnly: true,
+      hidden: ({value}) => value === undefined,
+      fields: founderFields,
     }),
   ],
   orderings: [
