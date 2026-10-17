@@ -190,17 +190,6 @@ export const startupType = defineType({
         }),
       ],
     }),
-    defineField({
-      name: 'founder',
-      title: 'Founder (legacy)',
-      type: 'object',
-      description:
-        'Superseded by "Founders". Kept read-only until the founder-to-founders migration has moved every value across.',
-      deprecated: {reason: 'Use the "Founders" list instead.'},
-      readOnly: true,
-      hidden: ({value}) => value === undefined,
-      fields: founderFields,
-    }),
   ],
   orderings: [
     {title: 'Name, A–Z', name: 'nameAsc', by: [{field: 'name', direction: 'asc'}]},
