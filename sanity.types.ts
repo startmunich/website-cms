@@ -22,6 +22,14 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
+export type FounderImage = {
+  asset?: SanityImageAssetReference
+  media?: unknown
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  _type: 'image'
+}
+
 export type NewsItem = {
   _id: string
   _type: 'newsItem'
@@ -145,17 +153,20 @@ export type Startup = {
   companyLinkedin?: string
   milestones?: string
   supportingPrograms?: string
+  founders?: Array<{
+    name: string
+    role?: string
+    batch?: string
+    image?: FounderImage
+    linkedin?: string
+    _type: 'founder'
+    _key: string
+  }>
   founder?: {
     name: string
     role?: string
     batch?: string
-    image?: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: 'image'
-    }
+    image?: FounderImage
     linkedin?: string
   }
 }
@@ -376,6 +387,7 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
+  | FounderImage
   | NewsItem
   | SanityImageCrop
   | SanityImageHotspot
